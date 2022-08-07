@@ -132,7 +132,8 @@ void Adafruit_4_01_ColourEPaper::display(void)
     writeSPI(0x90, false);
 
     writeSPI(0x10, true);
-    // write to gddr
+
+    Serial.println("Writing to GDDR");
 
     for (long i = 0; i < (WIDTH * HEIGHT / 2) / 2; i++)
     {
@@ -144,29 +145,38 @@ void Adafruit_4_01_ColourEPaper::display(void)
         writeSPI(buffer2[i], false);
     }
 
+    Serial.println("Wrote stuff to GDDR");
     // trigger gddr to screen
+    Serial.println("Triggering send to screen.");
     writeSPI(0x04, true);
-    busyHigh();
+    if (!(busyHigh()))
+    {
+        Serial.println("BusyHigh1 failed");
+    }
     writeSPI(0x12, true);
-    busyHigh();
-    writeSPI(0x02, true);
-    busyHigh();
-    spi->endTransaction();
+    // if (!(busyHigh()))
+    // {
+    //     Serial.println("BusyHigh2 failed");
+    // }
+    // writeSPI(0x02, true);
+    // if (!(busyLow()))
+    // {
+    //     Serial.println("BusyLow1 failed");
+    // }
+    // spi->endTransaction();
+    // Serial.println("Finished trigger");
+
+    // either block until screen finishes (waitForScreenBlocking) or do something else and then send POF + endtransaction yourself once busy is high (checkBusy + sendPOFandLeaveSPI)
 }
 void Adafruit_4_01_ColourEPaper::clearDisplay(void)
 {
     if (debugOn)
     {
-        Serial.println("writing ");
+        Serial.println("writing all white to memory");
     }
     memset(buffer1, 0x11, (WIDTH * HEIGHT / 2) / 2);
     memset(buffer2, 0x11, (WIDTH * HEIGHT / 2) / 2);
-    // Serial.println("Not implemented yet");
 }
-// void Adafruit_4_01_ColourEPaper::drawPixel(int x, int y, int colour)
-// {
-//     Serial.println("Not implemented yet");
-// }
 
 void Adafruit_4_01_ColourEPaper::drawPixel(int16_t x, int16_t y, uint16_t color)
 {
@@ -231,13 +241,24 @@ void Adafruit_4_01_ColourEPaper::test(void)
     Serial.println("Sent all clear commands. Refreshing screen");
 
     writeSPI(0x04, true);
-    busyHigh();
+    if (!(busyHigh()))
+    {
+        Serial.println("BusyHigh1 failed");
+    }
     writeSPI(0x12, true);
-    busyHigh();
-    writeSPI(0x02, true);
-    busyLow();
-    delay(500);
-    spi->endTransaction();
+    // if (!(busyHigh()))
+    // {
+    //     Serial.println("BusyHigh2 failed");
+    // }
+    // writeSPI(0x02, true);
+    // if (!(busyLow()))
+    // {
+    //     Serial.println("BusyLow1 failed");
+    // }
+    // delay(500);
+    // spi->endTransaction();
+
+    // either block until screen finishes (waitForScreenBlocking) or do something else and then send POF + endtransaction yourself once busy is high (checkBusy + sendPOFandLeaveSPI)
 }
 
 void Adafruit_4_01_ColourEPaper::writeSPI(uint8_t something, bool command)
@@ -296,4 +317,28 @@ bool Adafruit_4_01_ColourEPaper::busyLow()
     }
 
     return true;
+}
+
+void Adafruit_4_01_ColourEPaper::waitForScreenBlocking(void)
+{
+    Serial.println("Blocking wait for screen to finish updating");
+    while (!digitalRead(busyPin))
+        ;
+    sendPOFandLeaveSPI();
+}
+
+void Adafruit_4_01_ColourEPaper::sendPOFandLeaveSPI(void)
+{
+    Serial.println("Shutting off and leaving SPI");
+    writeSPI(0x02, true);
+    if (!(busyLow()))
+    {
+        Serial.println("BusyLow1 failed");
+    }
+    spi->endTransaction();
+}
+
+bool Adafruit_4_01_ColourEPaper::checkBusy(void)
+{
+    return digitalRead(busyPin);
 }

@@ -26,9 +26,11 @@ public:
     void display(void);
     void init(void);
     void clearDisplay(void);
-    //void drawPixel(int x, int y, int colour);
     void drawPixel(int16_t x, int16_t y, uint16_t color);
     void test(void);
+    void waitForScreenBlocking(void);
+    void sendPOFandLeaveSPI(void);
+    bool checkBusy(void);
 
 protected:
     void writeSPI(uint8_t something, bool command);
