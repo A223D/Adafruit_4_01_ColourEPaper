@@ -5,13 +5,24 @@ Adafruit_4_01_ColourEPaper::Adafruit_4_01_ColourEPaper(int w, int h, SPIClass *s
     dcPin = dc_pin;
     csPin = cs_pin;
     busyPin = busy_pin;
+    rstPin = rst_pin;
+    spiSettingsObject = SPISettings(SPI_SPEED, MSBFIRST, SPI_MODE0);
 }
+
 Adafruit_4_01_ColourEPaper::Adafruit_4_01_ColourEPaper(int w, int h, SPIClass *spi_ptr, int rst_pin, int cs_pin, int dc_pin, int busy_pin, bool debug_On) : Adafruit_GFX(w, h), spi(spi_ptr ? spi_ptr : &SPI), buffer1(NULL), buffer2(NULL)
 {
     dcPin = dc_pin;
     csPin = cs_pin;
     busyPin = busy_pin;
+    rstPin = rst_pin;
     debugOn = debug_On;
+    spiSettingsObject = SPISettings(SPI_SPEED, MSBFIRST, SPI_MODE0);
+}
+
+Adafruit_4_01_ColourEPaper::~Adafruit_4_01_ColourEPaper()
+{
+    free(buffer1);
+    free(buffer2);
 }
 
 bool Adafruit_4_01_ColourEPaper::begin(void)
@@ -41,20 +52,23 @@ bool Adafruit_4_01_ColourEPaper::begin(void)
     pinMode(csPin, OUTPUT);
     pinMode(rstPin, OUTPUT);
     pinMode(dcPin, OUTPUT);
-    pinMode(busyPin, OUTPUT);
+    pinMode(busyPin, INPUT);
     if (debugOn)
     {
         Serial.println("SPI init");
     }
     spi->begin();
-    spi->beginTransaction(SPISettings(2000000, MSBFIRST, SPI_MODE0));
+    spi->beginTransaction(spiSettingsObject);
     // send initialization commands to screen
     if (debugOn)
     {
         Serial.println("Resetting screen");
     }
     resetSceen();
-    busyHigh();
+    if (!(busyHigh()))
+    {
+        Serial.println("Busy High Failed");
+    }
 
     if (debugOn)
     {
@@ -97,6 +111,8 @@ bool Adafruit_4_01_ColourEPaper::begin(void)
     writeSPI(0xE3, true);
     writeSPI(0xAA, false);
 
+    spi->endTransaction();
+
     if (debugOn)
     {
         Serial.println("Init complete");
@@ -108,6 +124,7 @@ bool Adafruit_4_01_ColourEPaper::begin(void)
 void Adafruit_4_01_ColourEPaper::display(void)
 {
     // Serial.println("Not implemented yet");
+    spi->beginTransaction(spiSettingsObject);
     writeSPI(0x61, true); // Set Resolution setting
     writeSPI(0x02, false);
     writeSPI(0x80, false);
@@ -127,13 +144,14 @@ void Adafruit_4_01_ColourEPaper::display(void)
         writeSPI(buffer2[i], false);
     }
 
-    //trigger gddr to screen
+    // trigger gddr to screen
     writeSPI(0x04, true);
     busyHigh();
     writeSPI(0x12, true);
     busyHigh();
     writeSPI(0x02, true);
     busyHigh();
+    spi->endTransaction();
 }
 void Adafruit_4_01_ColourEPaper::clearDisplay(void)
 {
@@ -141,19 +159,25 @@ void Adafruit_4_01_ColourEPaper::clearDisplay(void)
     {
         Serial.println("writing ");
     }
-    memset(buffer1, 0, (WIDTH * HEIGHT / 2) / 2);
-    memset(buffer2, 0, (WIDTH * HEIGHT / 2) / 2);
+    memset(buffer1, 0x11, (WIDTH * HEIGHT / 2) / 2);
+    memset(buffer2, 0x11, (WIDTH * HEIGHT / 2) / 2);
     // Serial.println("Not implemented yet");
 }
-void Adafruit_4_01_ColourEPaper::drawPixel(int x, int y, int colour)
+// void Adafruit_4_01_ColourEPaper::drawPixel(int x, int y, int colour)
+// {
+//     Serial.println("Not implemented yet");
+// }
+
+void Adafruit_4_01_ColourEPaper::drawPixel(int16_t x, int16_t y, uint16_t color)
 {
-    Serial.println("Not implemented yet");
+    Serial.println("Not yet implemented");
 }
 
 void Adafruit_4_01_ColourEPaper::test(void)
 {
     // used for testing begin function
     // just write rainbow code to the screen after begin command is complete
+    spi->beginTransaction(spiSettingsObject);
     writeSPI(0x61, true); // Set Resolution setting
     writeSPI(0x02, false);
     writeSPI(0x80, false);
@@ -161,11 +185,47 @@ void Adafruit_4_01_ColourEPaper::test(void)
     writeSPI(0x90, false);
     writeSPI(0x10, true);
 
-    for (int i = 0; i < WIDTH / 2; i++)
+    for (int j = 0; j < 400; j++)
     {
-        for (int j = 0; j < HEIGHT; j++)
+
+        for (int i = 0; i < 40; i++)
+        {
+            writeSPI(0x0, false);
+        }
+
+        for (int i = 0; i < 40; i++)
         {
             writeSPI(0x11, false);
+        }
+
+        for (int i = 0; i < 40; i++)
+        {
+            writeSPI(0x22, false);
+        }
+
+        for (int i = 0; i < 40; i++)
+        {
+            writeSPI(0x33, false);
+        }
+
+        for (int i = 0; i < 40; i++)
+        {
+            writeSPI(0x44, false);
+        }
+
+        for (int i = 0; i < 40; i++)
+        {
+            writeSPI(0x55, false);
+        }
+
+        for (int i = 0; i < 40; i++)
+        {
+            writeSPI(0x66, false);
+        }
+
+        for (int i = 0; i < 40; i++)
+        {
+            writeSPI(0x77, false);
         }
     }
     Serial.println("Sent all clear commands. Refreshing screen");
@@ -177,6 +237,7 @@ void Adafruit_4_01_ColourEPaper::test(void)
     writeSPI(0x02, true);
     busyLow();
     delay(500);
+    spi->endTransaction();
 }
 
 void Adafruit_4_01_ColourEPaper::writeSPI(uint8_t something, bool command)
@@ -200,6 +261,7 @@ void Adafruit_4_01_ColourEPaper::writeSPI(uint8_t something, bool command)
 
 void Adafruit_4_01_ColourEPaper::resetSceen(void)
 {
+
     digitalWrite(rstPin, HIGH);
     delay(200);
     digitalWrite(rstPin, LOW);
