@@ -54,6 +54,53 @@ bool Adafruit_4_01_ColourEPaper::begin(void)
         Serial.println("Resetting screen");
     }
     resetSceen();
+    busyHigh();
+
+    if (debugOn)
+    {
+        Serial.println("Reset complete");
+    }
+
+    writeSPI(0x00, true);
+    writeSPI(0x2F, false);
+    writeSPI(0x00, false);
+
+    writeSPI(0x01, true);
+    writeSPI(0x37, false); // trying default of 00001000 orig 0x37
+    writeSPI(0x01, false); // trying default of 0x01, orig 0x00
+    writeSPI(0x05, false);
+    writeSPI(0x05, false);
+
+    writeSPI(0x03, true);
+    writeSPI(0x00, false);
+
+    writeSPI(0x06, true);
+    writeSPI(0xC7, false);
+    writeSPI(0xC7, false);
+    writeSPI(0x1D, false);
+
+    writeSPI(0x41, true);
+    writeSPI(0x00, false);
+
+    writeSPI(0x50, true);
+    writeSPI(0x37, false);
+
+    writeSPI(0x60, true);
+    writeSPI(0x22, false);
+
+    writeSPI(0x61, true);
+    writeSPI(0x02, false);
+    writeSPI(0x80, false);
+    writeSPI(0x01, false);
+    writeSPI(0x90, false);
+
+    writeSPI(0xE3, true);
+    writeSPI(0xAA, false);
+
+    if (debugOn)
+    {
+        Serial.println("Init complete");
+    }
 
     return true;
 }
@@ -80,12 +127,49 @@ void Adafruit_4_01_ColourEPaper::drawPixel(int x, int y, int colour)
 void Adafruit_4_01_ColourEPaper::test(void)
 {
     // used for testing begin function
-    // just write rainbow code to the screen
+    // just write rainbow code to the screen after begin command is complete
+    writeSPI(0x61, true); // Set Resolution setting
+    writeSPI(0x02, false);
+    writeSPI(0x80, false);
+    writeSPI(0x01, false);
+    writeSPI(0x90, false);
+    writeSPI(0x10, true);
+
+    for (int i = 0; i < WIDTH / 2; i++)
+    {
+        for (int j = 0; j < HEIGHT; j++)
+        {
+            writeSPI(0x11, false);
+        }
+    }
+    Serial.println("Sent all clear commands. Refreshing screen");
+
+    writeSPI(0x04, true);
+    busyHigh();
+    writeSPI(0x12, true);
+    busyHigh();
+    writeSPI(0x02, true);
+    busyLow();
+    delay(500);
 }
 
 void Adafruit_4_01_ColourEPaper::writeSPI(uint8_t something, bool command)
 {
-    Serial.println("Not yet implemented");
+    // Serial.println("Not yet implemented");
+    if (command)
+    {
+        digitalWrite(dcPin, LOW);
+    }
+    else
+    {
+        digitalWrite(dcPin, HIGH);
+    }
+
+    digitalWrite(csPin, LOW);
+
+    spi->transfer(something);
+
+    digitalWrite(csPin, HIGH);
 }
 
 void Adafruit_4_01_ColourEPaper::resetSceen(void)

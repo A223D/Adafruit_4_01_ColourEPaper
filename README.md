@@ -1,4 +1,3 @@
-# This my own clone of Adafruit GFX for experimentation purposes
 # THIS IS MY OWN CLONE OF ADAFRUIT GFX FOR EXPERIMENTATION PURPOSES
 
 This is the core graphics library for all our displays, providing a common set of graphics primitives (points, lines, circles, etc.). It needs to be paired with a hardware-specific library for each display device we carry (to handle the lower-level functions).

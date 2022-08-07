@@ -1,7 +1,7 @@
 #ifndef _Adafruit_4_01_ColourEPaper
 #define _Adafruit_4_01_ColourEPaper
 
-#include "Adafruit_GFX.h"
+#include <Adafruit_GFX.h>
 #include <SPI.h>
 
 #define EPD_COLOUR_BLACK 0
