@@ -12,6 +12,7 @@
 #define EPD_COLOUR_YELLOW 5
 #define EPD_COLOUR_ORANGE 6
 #define EPD_COLOUR_COFFEE 7
+#define BUSY_THRESH       5000
 
 class Adafruit_4_01_ColourEPaper : public Adafruit_GFX
 {
@@ -27,8 +28,11 @@ public:
     void drawPixel(int x, int y, int colour);
 
 protected:
-    void writeSPI(uint8_t something);
+    void writeSPI(uint8_t something, bool command);
     void test(void);
+    void resetSceen(void);
+    bool busyHigh(void);
+    bool busyLow(void);
     SPIClass *spi;
     char *buffer1 = NULL;
     char *buffer2 = NULL;
@@ -39,4 +43,4 @@ protected:
     bool debugOn = false;
 };
 
-#endif _Adafruit_4_01_ColourEPaper
+#endif

@@ -33,7 +33,7 @@ bool Adafruit_4_01_ColourEPaper::begin(void)
     }
     if (debugOn)
     {
-        Serial.println("Setting everything to 0");
+        Serial.println("Setting everything to 0 and pinmodes");
     }
     memset(buffer1, 0x11, (WIDTH * HEIGHT / 2) / 2); // fill everything with white
     memset(buffer2, 0x11, (WIDTH * HEIGHT / 2) / 2); // fill everything with white
@@ -42,8 +42,18 @@ bool Adafruit_4_01_ColourEPaper::begin(void)
     pinMode(rstPin, OUTPUT);
     pinMode(dcPin, OUTPUT);
     pinMode(busyPin, OUTPUT);
-
+    if (debugOn)
+    {
+        Serial.println("SPI init");
+    }
+    spi->begin();
+    spi->beginTransaction(SPISettings(2000000, MSBFIRST, SPI_MODE0));
     // send initialization commands to screen
+    if (debugOn)
+    {
+        Serial.println("Resetting screen");
+    }
+    resetSceen();
 
     return true;
 }
@@ -73,7 +83,45 @@ void Adafruit_4_01_ColourEPaper::test(void)
     // just write rainbow code to the screen
 }
 
-void Adafruit_4_01_ColourEPaper::writeSPI(uint8_t something)
+void Adafruit_4_01_ColourEPaper::writeSPI(uint8_t something, bool command)
 {
     Serial.println("Not yet implemented");
+}
+
+void Adafruit_4_01_ColourEPaper::resetSceen(void)
+{
+    digitalWrite(rstPin, HIGH);
+    delay(200);
+    digitalWrite(rstPin, LOW);
+    delay(1);
+    digitalWrite(rstPin, HIGH);
+    delay(200);
+}
+
+bool Adafruit_4_01_ColourEPaper::busyHigh()
+{
+    unsigned long endTime = millis() + BUSY_THRESH;
+    while (!digitalRead(busyPin) && (millis() < endTime))
+        ;
+
+    if (digitalRead(busyPin) == 0)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool Adafruit_4_01_ColourEPaper::busyLow()
+{
+    unsigned long endTime = millis() + BUSY_THRESH;
+    while (digitalRead(busyPin) && (millis() < endTime))
+        ;
+
+    if (digitalRead(busyPin) == 1)
+    {
+        return false;
+    }
+
+    return true;
 }
