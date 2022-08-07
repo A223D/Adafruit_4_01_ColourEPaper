@@ -107,7 +107,33 @@ bool Adafruit_4_01_ColourEPaper::begin(void)
 
 void Adafruit_4_01_ColourEPaper::display(void)
 {
-    Serial.println("Not implemented yet");
+    // Serial.println("Not implemented yet");
+    writeSPI(0x61, true); // Set Resolution setting
+    writeSPI(0x02, false);
+    writeSPI(0x80, false);
+    writeSPI(0x01, false);
+    writeSPI(0x90, false);
+
+    writeSPI(0x10, true);
+    // write to gddr
+
+    for (long i = 0; i < (WIDTH * HEIGHT / 2) / 2; i++)
+    {
+        writeSPI(buffer1[i], false);
+    }
+
+    for (long i = 0; i < (WIDTH * HEIGHT / 2) / 2; i++)
+    {
+        writeSPI(buffer2[i], false);
+    }
+
+    //trigger gddr to screen
+    writeSPI(0x04, true);
+    busyHigh();
+    writeSPI(0x12, true);
+    busyHigh();
+    writeSPI(0x02, true);
+    busyHigh();
 }
 void Adafruit_4_01_ColourEPaper::clearDisplay(void)
 {
@@ -117,7 +143,7 @@ void Adafruit_4_01_ColourEPaper::clearDisplay(void)
     }
     memset(buffer1, 0, (WIDTH * HEIGHT / 2) / 2);
     memset(buffer2, 0, (WIDTH * HEIGHT / 2) / 2);
-    Serial.println("Not implemented yet");
+    // Serial.println("Not implemented yet");
 }
 void Adafruit_4_01_ColourEPaper::drawPixel(int x, int y, int colour)
 {
