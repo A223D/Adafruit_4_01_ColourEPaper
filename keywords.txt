@@ -1,0 +1,32 @@
+#######################################
+# Syntax Coloring Map For Adafruit_4_01_ColourEPaper
+#######################################
+
+#######################################
+# Library (KEYWORD3)
+#######################################
+
+Adafruit_4_01_ColourEPaper	KEYWORD3
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+Adafruit_4_01_ColourEPaper	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin	KEYWORD2
+display	KEYWORD2
+clearDisplay	KEYWORD2
+init	KEYWORD2
+drawPixel	KEYWORD2
+waitForScreenBlocking	KEYWORD2
+sendPOFandLeaveSPI	KEYWORD2
+checkBusy	KEYWORD2
+
+#######################################
+# Structures (KEYWORD3)
+#######################################
