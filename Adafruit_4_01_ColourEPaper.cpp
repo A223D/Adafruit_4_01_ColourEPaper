@@ -172,6 +172,10 @@ void Adafruit_4_01_ColourEPaper::clearDisplay(void)
 
 void Adafruit_4_01_ColourEPaper::drawPixel(int16_t x, int16_t y, uint16_t color)
 {
+    if (x > WIDTH - 1 || x < 0 || y > HEIGHT - 1 || y < 0)
+    {
+        return;
+    }
     long pixelNum = (y * WIDTH) + x;
     // Serial.println("Not yet implemented");
     bool after = pixelNum % 2; // if remainder is 0, most significant nibble, if remainder is 1, least significant nibble
@@ -221,37 +225,44 @@ void Adafruit_4_01_ColourEPaper::drawPixel(int16_t x, int16_t y, uint16_t color)
         }
     }
 
-    //at this point, we know which buffer, which byte, and position
-    //now we have to locate the byte, and edit it
-    if(!secondBuffer){
-        //if first buffer
-        if(after){
-            char newByte = buffer1[byteNum]; //get the byte
-            newByte &= 0xF0;                 //clear the latter half for new colour
+    // at this point, we know which buffer, which byte, and position
+    // now we have to locate the byte, and edit it
+    if (!secondBuffer)
+    {
+        // if first buffer
+        if (after)
+        {
+            char newByte = buffer1[byteNum]; // get the byte
+            newByte &= 0xF0;                 // clear the latter half for new colour
             newByte |= color;
             buffer1[byteNum] = newByte;
-        }else{
+        }
+        else
+        {
             char newByte = buffer1[byteNum];
             newByte &= 0xF;
-            newByte |= (color<<4);
+            newByte |= (color << 4);
             buffer1[byteNum] = newByte;
-
         }
-    }else{
-        //if second buffer
-        if(after){
+    }
+    else
+    {
+        // if second buffer
+        if (after)
+        {
             char newByte = buffer2[byteNum];
             newByte &= 0xF0;
             newByte |= color;
             buffer2[byteNum] = newByte;
-        }else{
+        }
+        else
+        {
             char newByte = buffer2[byteNum];
             newByte &= 0xF;
-            newByte |= (color<<4);
+            newByte |= (color << 4);
             buffer2[byteNum] = newByte;
         }
     }
-
 }
 
 void Adafruit_4_01_ColourEPaper::test(void)
