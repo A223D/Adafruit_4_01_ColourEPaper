@@ -13,16 +13,71 @@ Adafruit_4_01_ColourEPaper::~Adafruit_4_01_ColourEPaper()
 {
     free(buffer1);
     free(buffer2);
+    if(needToDeleteSPI){
+        delete spi;
+    }
 }
 
 bool Adafruit_4_01_ColourEPaper::begin(SPIClass *spi_ptr, int cs_pin)
 {
+    // pin and spi pointer allocation
     spi = spi_ptr;
     csPin = cs_pin;
+    needToDeleteSPI = false;
+
+    // pinModes
+    pinMode(csPin, OUTPUT);
+    pinMode(rstPin, OUTPUT);
+    pinMode(dcPin, OUTPUT);
+    pinMode(busyPin, INPUT);
+
+    // SPI init
+
+    if (debugOn)
+    {
+        Serial.println("SPI init");
+    }
+    spi->begin();
+    spi->beginTransaction(spiSettingsObject);
+
+    // everything below can be it's own function
+    return frameBufferAndInit();
+}
+
+bool Adafruit_4_01_ColourEPaper::begin(int sclk_pin, int copi_pin, int cs_pin)
+{
+    // pin and spi pointer allocation
+    csPin = cs_pin;
+    needToDeleteSPI = true;
+    spi = new SPIClass(HSPI);
+
+    // pinModes
+    pinMode(csPin, OUTPUT);
+    pinMode(rstPin, OUTPUT);
+    pinMode(dcPin, OUTPUT);
+    pinMode(busyPin, INPUT);
+
+    // SPI init
+
+    if (debugOn)
+    {
+        Serial.println("SPI init");
+    }
+    spi->begin(sclk_pin, -1, copi_pin, cs_pin);
+    spi->beginTransaction(spiSettingsObject);
+
+    return frameBufferAndInit();
+}
+
+bool Adafruit_4_01_ColourEPaper::frameBufferAndInit()
+{
+    // framebuffer allocation
     if (debugOn)
     {
         Serial.println("Let's allocate some memory");
     }
+
+    // Apparently doesn't work when 1 large buffer is allocated
     buffer1 = (char *)malloc((WIDTH * HEIGHT / 2) / 2);
     buffer2 = (char *)malloc((WIDTH * HEIGHT / 2) / 2);
 
@@ -34,23 +89,14 @@ bool Adafruit_4_01_ColourEPaper::begin(SPIClass *spi_ptr, int cs_pin)
         }
         return false;
     }
+
     if (debugOn)
     {
-        Serial.println("Setting everything to 0 and pinmodes");
+        Serial.println("Setting everything to 1");
     }
     memset(buffer1, 0x11, (WIDTH * HEIGHT / 2) / 2); // fill everything with white
     memset(buffer2, 0x11, (WIDTH * HEIGHT / 2) / 2); // fill everything with white
 
-    pinMode(csPin, OUTPUT);
-    pinMode(rstPin, OUTPUT);
-    pinMode(dcPin, OUTPUT);
-    pinMode(busyPin, INPUT);
-    if (debugOn)
-    {
-        Serial.println("SPI init");
-    }
-    spi->begin();
-    spi->beginTransaction(spiSettingsObject);
     // send initialization commands to screen
     if (debugOn)
     {

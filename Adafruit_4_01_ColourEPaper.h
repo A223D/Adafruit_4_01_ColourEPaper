@@ -22,6 +22,7 @@ public:
     ~Adafruit_4_01_ColourEPaper();
 
     bool begin(SPIClass *spi_ptr, int cs_pin);
+    bool begin(int sclk_pin, int copi_pin, int cs_pin);
     void display(void);
     void init(void);
     void clearDisplay(void);
@@ -32,6 +33,7 @@ public:
     bool checkBusy(void);
 
 protected:
+    bool frameBufferAndInit();
     void writeSPI(uint8_t something, bool command);
     void resetScreen(void);
     bool busyHigh(void);
@@ -45,6 +47,7 @@ protected:
     int dcPin;
     int busyPin;
     bool debugOn = false;
+    bool needToDeleteSPI;
 };
 
 #endif
