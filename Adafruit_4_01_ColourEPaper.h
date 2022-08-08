@@ -18,11 +18,10 @@
 class Adafruit_4_01_ColourEPaper : public Adafruit_GFX
 {
 public:
-    Adafruit_4_01_ColourEPaper(int w, int h, SPIClass *spi_ptr, int rst_pin, int cs_pin, int dc_pin, int busy_pin);
-    Adafruit_4_01_ColourEPaper(int w, int h, SPIClass *spi_ptr, int rst_pin, int cs_pin, int dc_pin, int busy_pin, bool debug_On);
+    Adafruit_4_01_ColourEPaper(int w, int h, int rst_pin, int dc_pin, int busy_pin, bool debug_On);
     ~Adafruit_4_01_ColourEPaper();
 
-    bool begin(void);
+    bool begin(SPIClass *spi_ptr, int cs_pin);
     void display(void);
     void init(void);
     void clearDisplay(void);
@@ -34,7 +33,7 @@ public:
 
 protected:
     void writeSPI(uint8_t something, bool command);
-    void resetSceen(void);
+    void resetScreen(void);
     bool busyHigh(void);
     bool busyLow(void);
     SPIClass *spi;

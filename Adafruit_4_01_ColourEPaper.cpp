@@ -1,18 +1,8 @@
 #include "Adafruit_4_01_ColourEPaper.h"
 
-Adafruit_4_01_ColourEPaper::Adafruit_4_01_ColourEPaper(int w, int h, SPIClass *spi_ptr, int rst_pin, int cs_pin, int dc_pin, int busy_pin) : Adafruit_GFX(w, h), spi(spi_ptr ? spi_ptr : &SPI), buffer1(NULL), buffer2(NULL)
+Adafruit_4_01_ColourEPaper::Adafruit_4_01_ColourEPaper(int w, int h, int rst_pin, int dc_pin, int busy_pin, bool debug_On) : Adafruit_GFX(w, h), buffer1(NULL), buffer2(NULL)
 {
     dcPin = dc_pin;
-    csPin = cs_pin;
-    busyPin = busy_pin;
-    rstPin = rst_pin;
-    spiSettingsObject = SPISettings(SPI_SPEED, MSBFIRST, SPI_MODE0);
-}
-
-Adafruit_4_01_ColourEPaper::Adafruit_4_01_ColourEPaper(int w, int h, SPIClass *spi_ptr, int rst_pin, int cs_pin, int dc_pin, int busy_pin, bool debug_On) : Adafruit_GFX(w, h), spi(spi_ptr ? spi_ptr : &SPI), buffer1(NULL), buffer2(NULL)
-{
-    dcPin = dc_pin;
-    csPin = cs_pin;
     busyPin = busy_pin;
     rstPin = rst_pin;
     debugOn = debug_On;
@@ -25,8 +15,10 @@ Adafruit_4_01_ColourEPaper::~Adafruit_4_01_ColourEPaper()
     free(buffer2);
 }
 
-bool Adafruit_4_01_ColourEPaper::begin(void)
+bool Adafruit_4_01_ColourEPaper::begin(SPIClass *spi_ptr, int cs_pin)
 {
+    spi = spi_ptr;
+    csPin = cs_pin;
     if (debugOn)
     {
         Serial.println("Let's allocate some memory");
@@ -64,7 +56,7 @@ bool Adafruit_4_01_ColourEPaper::begin(void)
     {
         Serial.println("Resetting screen");
     }
-    resetSceen();
+    resetScreen();
     if (!(busyHigh()))
     {
         Serial.println("Busy High Failed");
@@ -359,7 +351,7 @@ void Adafruit_4_01_ColourEPaper::writeSPI(uint8_t something, bool command)
     digitalWrite(csPin, HIGH);
 }
 
-void Adafruit_4_01_ColourEPaper::resetSceen(void)
+void Adafruit_4_01_ColourEPaper::resetScreen(void)
 {
 
     digitalWrite(rstPin, HIGH);
