@@ -180,7 +180,86 @@ void Adafruit_4_01_ColourEPaper::clearDisplay(void)
 
 void Adafruit_4_01_ColourEPaper::drawPixel(int16_t x, int16_t y, uint16_t color)
 {
-    Serial.println("Not yet implemented");
+    long pixelNum = (y * WIDTH) + x;
+    // Serial.println("Not yet implemented");
+    bool after = pixelNum % 2; // if remainder is 0, most significant nibble, if remainder is 1, least significant nibble
+    long byteNum = pixelNum / 2;
+    bool secondBuffer = false;
+    if (debugOn)
+    {
+        Serial.print("Master Pixel number:\t");
+        Serial.println(pixelNum);
+    }
+
+    if (pixelNum < WIDTH * (HEIGHT / 2))
+    {
+        if (debugOn)
+        {
+            Serial.println("Buffer 1");
+        }
+        secondBuffer = false;
+    }
+    else
+    {
+        if (debugOn)
+        {
+            Serial.println("Buffer 2");
+        }
+        secondBuffer = true;
+        pixelNum -= 128000;
+    }
+
+    after = pixelNum % 2;
+    byteNum = pixelNum / 2;
+
+    if (debugOn)
+    {
+        Serial.print("Pixel number:\t");
+        Serial.println(pixelNum);
+        Serial.print("Byte number:\t");
+        Serial.println(byteNum);
+        Serial.print("Position:\t");
+        if (after)
+        {
+            Serial.println("After");
+        }
+        else
+        {
+            Serial.println("Before");
+        }
+    }
+
+    //at this point, we know which buffer, which byte, and position
+    //now we have to locate the byte, and edit it
+    if(!secondBuffer){
+        //if first buffer
+        if(after){
+            char newByte = buffer1[byteNum]; //get the byte
+            newByte &= 0xF0;                 //clear the latter half for new colour
+            newByte |= color;
+            buffer1[byteNum] = newByte;
+        }else{
+            char newByte = buffer1[byteNum];
+            newByte &= 0xF;
+            newByte |= (color<<4);
+            buffer1[byteNum] = newByte;
+
+        }
+    }else{
+        //if second buffer
+        if(after){
+            char newByte = buffer2[byteNum];
+            newByte &= 0xF0;
+            newByte |= color;
+            buffer2[byteNum] = newByte;
+        }else{
+            char newByte = buffer2[byteNum];
+            newByte &= 0xF;
+            newByte |= (color<<4);
+            buffer2[byteNum] = newByte;
+        }
+    }
+
 }
 
 void Adafruit_4_01_ColourEPaper::test(void)
@@ -321,7 +400,10 @@ bool Adafruit_4_01_ColourEPaper::busyLow()
 
 void Adafruit_4_01_ColourEPaper::waitForScreenBlocking(void)
 {
-    Serial.println("Blocking wait for screen to finish updating");
+    if (debugOn)
+    {
+        Serial.println("Blocking wait for screen to finish updating");
+    }
     while (!digitalRead(busyPin))
         ;
     sendPOFandLeaveSPI();
@@ -329,7 +411,10 @@ void Adafruit_4_01_ColourEPaper::waitForScreenBlocking(void)
 
 void Adafruit_4_01_ColourEPaper::sendPOFandLeaveSPI(void)
 {
-    Serial.println("Shutting off and leaving SPI");
+    if (debugOn)
+    {
+        Serial.println("Shutting off and leaving SPI");
+    }
     writeSPI(0x02, true);
     if (!(busyLow()))
     {
@@ -340,5 +425,9 @@ void Adafruit_4_01_ColourEPaper::sendPOFandLeaveSPI(void)
 
 bool Adafruit_4_01_ColourEPaper::checkBusy(void)
 {
-    return digitalRead(busyPin);
+    if (debugOn)
+    {
+        Serial.println("Blocking wait for busy to be high");
+    }
+    return !(digitalRead(busyPin));
 }
