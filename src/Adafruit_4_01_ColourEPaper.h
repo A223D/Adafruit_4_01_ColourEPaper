@@ -24,7 +24,6 @@ public:
     bool begin(SPIClass *spi_ptr, int cs_pin);
     bool begin(int sclk_pin, int copi_pin, int cs_pin);
     void display(void);
-    void init(void);
     void clearDisplay(void);
     void drawPixel(int16_t x, int16_t y, uint16_t color);
     void test(void);
