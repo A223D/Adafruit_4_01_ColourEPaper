@@ -83,7 +83,7 @@ This constructor is used to create the object which represents the screen. You c
 	```c++
 	void Adafruit_4_01_ColourEPaper::test(void);
 	```
-	This function is provided to test if a display works properly. It draws vertical bars of all the colours available in the frame buffer. Use `display()` and one of the two mentioned methods to complete the screen write procedure.
+	This function is provided to test if a display works properly. It bypasses the frame buffer and directly writes vertical bars of each colour to the screen. Use one of the two mentioned methods to complete the screen write procedure.
 
 * **Wait For Screen (Blocking)**
 	```c++

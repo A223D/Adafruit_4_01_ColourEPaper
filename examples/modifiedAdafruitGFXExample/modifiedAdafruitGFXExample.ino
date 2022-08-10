@@ -249,7 +249,6 @@ void loop()
     Serial.println("Drawing vertical bars of all colours on the screen");
     ePaperObject.clearDisplay();
     ePaperObject.test();
-    ePaperObject.display();
     ePaperObject.waitForScreenBlocking();
 
     Serial.println("Done");

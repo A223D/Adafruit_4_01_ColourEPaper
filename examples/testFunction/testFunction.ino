@@ -25,7 +25,6 @@ void setup()
   delay(10000); // wait for 10 seconds
 
   ePaperObject.test();
-  ePaperObject.display();
   while (ePaperObject.checkBusy())
     ;
   ePaperObject.sendPOFandLeaveSPI();
