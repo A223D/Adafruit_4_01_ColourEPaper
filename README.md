@@ -52,14 +52,14 @@ This constructor is used to create the object which represents the screen. You c
 	|SCLK|14|
 	|CS/SS|15|
 	
-	The frame buffer is also allocated, and some initialization commands are also sent to the screen. There is an example called `defaultPins` which demonstrates how to use this definition of `begin`. 
+	The frame buffer is also allocated, all white pixels are written to it, and some initialization commands are also sent to the screen. There is an example called `defaultPins` which demonstrates how to use this definition of `begin`. 
 	
 	**Second One**
 	```c++
 	//second definition
 	bool Adafruit_4_01_ColourEPaper::begin(int sclk_pin, int copi_pin, int cs_pin);
 	```
-	The above declaration uses the HSPI SPI bus on the ESP32 with the pins that are provided as arguments. The frame buffer is also allocated, and some initialization commands are also sent to the screen. There is an example called `customPins`, which demonstrates how to use this definition.
+	The above declaration uses the HSPI SPI bus on the ESP32 with the pins that are provided as arguments. The frame buffer is also allocated, all white pixels are written to it, and some initialization commands are also sent to the screen. There is an example called `customPins`, which demonstrates how to use this definition.
 	
 * **Display**
 	```c++
@@ -130,4 +130,4 @@ This constructor is used to create the object which represents the screen. You c
 ### AdafruitGFX Functions (drawing functions)
 
 Apart from the functions in the library, all the functions in the `AdafruitGFX` library can be used on the object created by the constructor of this library. [Here is a tutorial on AdafruitGFX](https://learn.adafruit.com/adafruit-gfx-graphics-library/overview). As a reminder, the information about colour mentioned in the `Coordinate System and Units` section is not applicable here, since each pixel can only be one of the specific colours shown above. [The graphics functions are provided here](https://learn.adafruit.com/adafruit-gfx-graphics-library/graphics-primitives).
-There is an example provided which demonstrates `AdafruitGFX` functionality called `modifiedAdafruitGFXExample`. This is based on the standard `AdafruitGFX` example provided with their other display-specific libraries which use `AdafruitGFX`.
+There is an example provided which demonstrates `AdafruitGFX` functionality called `modifiedAdafruitGFXExample`, which is modified to account for the slow screen refresh. This is based on the standard `AdafruitGFX` example provided with their other display-specific libraries which use `AdafruitGFX`.

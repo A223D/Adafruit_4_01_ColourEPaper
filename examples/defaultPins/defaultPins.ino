@@ -19,7 +19,7 @@ void setup()
   if (!ePaperObject.begin())
   {
     Serial.println("Something went wrong. Enable debugging and check");
-  };
+  }
 
   Serial.println("Let's clear the screen");
   ePaperObject.display();
