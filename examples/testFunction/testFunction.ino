@@ -1,12 +1,8 @@
 #include <Adafruit_4_01_ColourEPaper.h>
 
-#include <Fonts/FreeSansBold24pt7b.h>
-
 #define RST_PIN 26
 #define DC_PIN 27
 #define BUSY_PIN 25
-
-#define HOWMUCH 71
 
 #define WIDTH 640
 #define HEIGHT 400
