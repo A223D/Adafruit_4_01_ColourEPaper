@@ -115,7 +115,7 @@ This constructor is used to create the object which represents the screen. You c
 	//and then power off refreshing mechanism
 	//and release SPI bus
 	while(ePaperObject.checkBusy());
-  ePaperObject.sendPOFandLeaveSPI();
+	ePaperObject.sendPOFandLeaveSPI();
 
 	//could have also used this here as well:
 	//ePaperObject.waitForScreenBlocking()
