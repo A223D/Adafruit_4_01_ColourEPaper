@@ -6,7 +6,7 @@
 #define DC_PIN          27
 #define BUSY_PIN        25
 
-#define HOWMUCH   71
+#define HOWMUCH         71
 
 #define WIDTH           640
 #define HEIGHT          400
@@ -21,7 +21,6 @@ void setup() {
   ePaperObject.display();
   ePaperObject.waitForScreenBlocking();
 
-
   Serial.println("Blank Screen now");
   delay(10000);                           //wait for 10 seconds
 
@@ -33,6 +32,7 @@ void setup() {
 }
 
 void loop() {
+
   // Nothing here
 
 }
@@ -41,28 +41,27 @@ void loop() {
 void apparentlyFunction() {
   ePaperObject.setFont(&FreeSansBold24pt7b);
   ePaperObject.setTextSize(1);           // Normal 1:1 pixel scale
-  ePaperObject.setTextColor(EPD_COLOUR_BLACK);        // Draw white text
+  ePaperObject.setTextColor(EPD_COLOUR_BLACK);        // Draw black text
   ePaperObject.setCursor(52, 33);            // Start at top-left corner
   ePaperObject.println("Apparently this works...");
 
-  ePaperObject.setTextColor(EPD_COLOUR_GREEN);        // Draw white text
-  ePaperObject.setCursor(358, 33 + (HOWMUCH * 1));        // Start at top-left corner
+  ePaperObject.setTextColor(EPD_COLOUR_GREEN);        // Draw green text
+  ePaperObject.setCursor(358, 33 + (HOWMUCH * 1));
   ePaperObject.println("And this...");
 
-  ePaperObject.setTextColor(EPD_COLOUR_BLUE);        // Draw white text
-  ePaperObject.setCursor(358, 33 + (HOWMUCH * 2));        // Start at top-left corner
+  ePaperObject.setTextColor(EPD_COLOUR_BLUE);        // Draw blue text
+  ePaperObject.setCursor(358, 33 + (HOWMUCH * 2));
   ePaperObject.println("And this...");
 
-  ePaperObject.setTextColor(EPD_COLOUR_RED);        // Draw white text
-  ePaperObject.setCursor(358, 33 + (HOWMUCH * 3));        // Start at top-left corner
+  ePaperObject.setTextColor(EPD_COLOUR_RED);        // Draw red text
+  ePaperObject.setCursor(358, 33 + (HOWMUCH * 3));
   ePaperObject.println("And this...");
 
-  ePaperObject.setTextColor(EPD_COLOUR_YELLOW);        // Draw white text
-  ePaperObject.setCursor(358, 33 + (HOWMUCH * 4));        // Start at top-left corner
+  ePaperObject.setTextColor(EPD_COLOUR_YELLOW);        // Draw yellow text
+  ePaperObject.setCursor(358, 33 + (HOWMUCH * 4));
   ePaperObject.println("And this...");
 
-  ePaperObject.setTextColor(EPD_COLOUR_ORANGE);        // Draw white text
-  ePaperObject.setCursor(358, 33 + (HOWMUCH * 5));        // Start at top-left corner
+  ePaperObject.setTextColor(EPD_COLOUR_ORANGE);        // Draw orange text
+  ePaperObject.setCursor(358, 33 + (HOWMUCH * 5));
   ePaperObject.println("And this...");
-
 }
