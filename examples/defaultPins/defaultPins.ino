@@ -11,40 +11,29 @@
 #define WIDTH           640
 #define HEIGHT          400
 
-#define HSPI_MISO   12
-#define HSPI_COPI   13
-#define HSPI_SCLK   14
-#define HSPI_SS     15
-
-//SPIClass* hspi = NULL;
-
 Adafruit_4_01_ColourEPaper ePaperObject(WIDTH, HEIGHT, RST_PIN, DC_PIN, BUSY_PIN, false);
 
 void setup() {
-  //hspi = new SPIClass(HSPI);
-  //hspi->begin();
-  pinMode(HSPI_SS, OUTPUT);
-  pinMode(RST_PIN, OUTPUT);
-  pinMode(DC_PIN, OUTPUT);
-  pinMode(BUSY_PIN, INPUT);
   Serial.begin(115200);
-  // ePaperObject.begin(hspi);
-  ePaperObject.begin(HSPI_SCLK, HSPI_COPI, HSPI_SS);
-  
-  Serial.println("Let's print a line");
-  ePaperObject.display();
-  ePaperObject.waitForScreenBlocking();
-  Serial.println("Blank Screen now");
-  delay(10000);
-  apparentlyFunction();
+  ePaperObject.begin();
 
+  Serial.println("Let's clear the screen");
   ePaperObject.display();
   ePaperObject.waitForScreenBlocking();
+
+
+  Serial.println("Blank Screen now");
+  delay(10000);                           //wait for 10 seconds
+
+  apparentlyFunction();
+  ePaperObject.display();
+  ePaperObject.waitForScreenBlocking();
+
   Serial.println("Done!");
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  // Nothing here
 
 }
 

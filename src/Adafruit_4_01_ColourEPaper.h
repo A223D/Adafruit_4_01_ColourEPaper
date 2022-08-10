@@ -21,7 +21,7 @@ public:
     Adafruit_4_01_ColourEPaper(int w, int h, int rst_pin, int dc_pin, int busy_pin, bool debug_On);
     ~Adafruit_4_01_ColourEPaper();
 
-    bool begin(SPIClass *spi_ptr, int cs_pin);
+    bool begin(void);
     bool begin(int sclk_pin, int copi_pin, int cs_pin);
     void display(void);
     void clearDisplay(void);

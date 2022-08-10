@@ -6,6 +6,14 @@ Adafruit_4_01_ColourEPaper::Adafruit_4_01_ColourEPaper(int w, int h, int rst_pin
     busyPin = busy_pin;
     rstPin = rst_pin;
     debugOn = debug_On;
+    if (debugOn)
+    {
+        Serial.println("Setting Constructor pinModes");
+    }
+    pinMode(dcPin, OUTPUT);
+    pinMode(busyPin, INPUT);
+    pinMode(rstPin, OUTPUT);
+
     spiSettingsObject = SPISettings(SPI_SPEED, MSBFIRST, SPI_MODE0);
 }
 
@@ -13,21 +21,29 @@ Adafruit_4_01_ColourEPaper::~Adafruit_4_01_ColourEPaper()
 {
     free(buffer1);
     free(buffer2);
-    if (needToDeleteSPI)
-    {
-        delete spi;
-    }
+
+    delete spi;
 }
 
-bool Adafruit_4_01_ColourEPaper::begin(SPIClass *spi_ptr, int cs_pin)
+bool Adafruit_4_01_ColourEPaper::begin(void)
 {
     // pin and spi pointer allocation
-    spi = spi_ptr;
-    csPin = cs_pin;
-    needToDeleteSPI = false;
+    spi = new SPIClass(HSPI);
 
+    if (debugOn)
+    {
+        Serial.println("Setting begin pinModes(csPin stuff done later)");
+
+        Serial.print("rstPin\t");
+        Serial.println(rstPin);
+        Serial.print("dcPin\t");
+        Serial.println(dcPin);
+        Serial.print("busyPin\t");
+        Serial.println(busyPin);
+    }
     // pinModes
-    pinMode(csPin, OUTPUT);
+    // csPin stuff is done later since automatic SPI initialization occurs at spi->begin()
+
     pinMode(rstPin, OUTPUT);
     pinMode(dcPin, OUTPUT);
     pinMode(busyPin, INPUT);
@@ -39,6 +55,17 @@ bool Adafruit_4_01_ColourEPaper::begin(SPIClass *spi_ptr, int cs_pin)
         Serial.println("SPI init");
     }
     spi->begin();
+
+    //CsPin init and pinMode
+    csPin = spi->pinSS();
+    pinMode(csPin, OUTPUT);
+    if (debugOn)
+    {
+        Serial.print("csPin\t");
+        Serial.println(csPin);
+    }
+
+
     spi->beginTransaction(spiSettingsObject);
 
     // everything below can be it's own function
@@ -49,7 +76,6 @@ bool Adafruit_4_01_ColourEPaper::begin(int sclk_pin, int copi_pin, int cs_pin)
 {
     // pin and spi pointer allocation
     csPin = cs_pin;
-    needToDeleteSPI = true;
     spi = new SPIClass(HSPI);
 
     // pinModes
