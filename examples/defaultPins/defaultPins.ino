@@ -26,7 +26,8 @@ void setup() {
 
   apparentlyFunction();
   ePaperObject.display();
-  ePaperObject.waitForScreenBlocking();
+  while(ePaperObject.checkBusy());
+  ePaperObject.sendPOFandLeaveSPI();
 
   Serial.println("Done!");
 }
